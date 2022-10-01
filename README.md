@@ -13,7 +13,7 @@ This project is a minimalistic implementation of AlacGan and it is based on the 
 Because of these differences, the results are slightly worse but the model was trained significantly faster and the process of collecting data did not take too long.
 
 ## Model weights
-https://download937.mediafire.com/9f2hkqiklh4g/kozdgktz2yodnh1/gen_432000.pth
+https://download938.mediafire.com/nd1xp1xdgitg/aig8n36f4vrne6t/gen_373000.pth
 
 ## Colorization examples
 All these images were colorized by the alacgan neural network
