@@ -50,7 +50,7 @@ def xdog(img,sigma=0.5,k=1.6, gamma=1,epsilon=1,phi=1):
 				aux[i,j] = 255*(1 + np.tanh(phi*(aux[i,j])))
 	return aux
 
-def to_sketch(img_orig, sigma=0.4, k=4.5, gamma=0.92, epsilon=-1, phi=10e15, area_min=2):
+def to_sketch(img_orig, sigma=0.3, k=4.5, gamma=0.95, epsilon=-1, phi=10e15, area_min=2):
     img_cnts = []
     img = cv2.cvtColor(np.array(img_orig), cv2.COLOR_RGB2GRAY)
     img_xdog = xdog(img, sigma=sigma, k=k, gamma=gamma, epsilon=epsilon, phi=phi).astype(np.uint8)

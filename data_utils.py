@@ -14,11 +14,12 @@ from xdog import to_sketch
 # -
 
 import torch
+import torch.nn as nn
 import torch.utils.data as data
 from torch.utils.data.sampler import Sampler
 
 from torchvision import transforms
-from torchvision.transforms import Scale, CenterCrop
+from torchvision.transforms import Resize, CenterCrop
 
 mu, sigma = 1, 0.005
 X = stats.truncnorm((0 - mu) / sigma, (1 - mu) / sigma, loc=mu, scale=sigma)
@@ -28,6 +29,35 @@ denormalize = transforms.Compose([ transforms.Normalize(mean = [ 0., 0., 0. ],
                                   transforms.Normalize(mean = [ -0.5, -0.5, -0.5 ],
                                                        std = [ 1., 1., 1. ]),])
 
+etrans = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5), (0.5))
+])
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def predict_img(gen, sk, hnt = None):
+    #sk = Image.open(sketch_path).convert('L')
+    sk = etrans(sk)
+
+    pad_w = 16 - sk.shape[1] % 16 if sk.shape[1] % 16 != 0 else 0
+    pad_h = 16 - sk.shape[2] % 16 if sk.shape[2] % 16 != 0 else 0
+    pad = nn.ZeroPad2d((pad_h, 0, pad_w, 0))
+    sk = pad(sk)
+
+    sk = sk.unsqueeze(0)
+    sk = sk.to(device)
+
+    if hnt == None:
+        hnt = torch.zeros((1, 4, sk.shape[2]//4, sk.shape[3]//4))
+
+    hnt = hnt.to(device)
+
+    img_gen = gen(sk, hnt, sketch_feat=None).squeeze(0)
+    img_gen = denormalize(img_gen) * 255
+    img_gen = img_gen.permute(1,2,0).detach().cpu().numpy().astype(np.uint8)
+    #return img_gen[pad_w:, pad_h:]
+    return Image.fromarray(img_gen[pad_w:, pad_h:])
 
 def files(img_path, img_size=512):
     img_path = os.path.abspath(img_path)
@@ -60,13 +90,13 @@ def make_trans(img_size):
     ])
 
     ctrans = transforms.Compose([
-            transforms.Scale(img_size, Image.BICUBIC),
+            transforms.Resize(img_size, Image.BICUBIC),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
 
     strans = transforms.Compose([
-            transforms.Scale(img_size, Image.BICUBIC),
+            transforms.Resize(img_size, Image.BICUBIC),
             transforms.ToTensor(),
             transforms.Lambda(jitter),
             transforms.Normalize((0.5), (0.5))
@@ -141,9 +171,9 @@ class RandomSizedCrop(object):
                 return img.resize((self.size, self.size), self.interpolation)
 
         # Fallback
-        scale = Scale(self.size, interpolation=self.interpolation)
+        Resize = Resize(self.size, interpolation=self.interpolation)
         crop = CenterCrop(self.size)
-        return crop(scale(img))
+        return crop(Resize(img))
 
 
 class ImageFolder(data.Dataset):
