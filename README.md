@@ -1,8 +1,8 @@
 # Line Art Colorization
 This project is a minimalistic implementation of AlacGan and it is based on the paper called User-Guided Deep Anime Line Art Colorization with Conditional Adversarial Networks (https://arxiv.org/pdf/1808.03240.pdf) as well as its github repository.
 
-## Colab example to play with the model (just run!)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1jInaIELLo-Y1M8MnIgA-7aXSWRYlHnC9?usp=sharing)
+## Try it in Huggingface Spaces
+[![Generic badge](https://img.shields.io/badge/🤗-Open%20in%20Spaces-blue.svg)](https://huggingface.co/spaces/N1ckQt/line-art-colorization)
 
 ## Differences from the original implementation
 1. Less variants of line thickness (as it did not make the model performance significantly worse)
